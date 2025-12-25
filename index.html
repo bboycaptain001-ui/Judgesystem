@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>街舞大賽評分系統 - 進階版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-active { background-color: #4f46e5; border-color: #818cf8; }
+    </style>
+</head>
+<body class="p-4 min-h-screen flex items-center justify-center">
+    <div id="app" class="w-full max-w-2xl">
+        
+        <!-- 第一階段：設定頁面 -->
+        <div id="setup-screen" class="glass-card p-8 rounded-3xl shadow-2xl fade-in">
+            <h1 class="text-3xl font-bold text-center mb-2 text-indigo-400">系統初始化</h1>
+            <p class="text-center text-slate-400 mb-8">請設定本次活動與評審資訊</p>
+            
+            <div class="space-y-6">
+                <!-- 活動名稱 -->
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-300">活動名稱 (分類用)</label>
+                    <input type="text" id="setup-event" class="w-full p-4 bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="例如：2024 夏季海選">
+                </div>
+
+                <!-- 評審身分 -->
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-300">評審身分</label>
+                    <select id="setup-judge" class="w-full p-4 bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="">請選擇評審...</option>
+                        <option value="評審A">評審 A</option>
+                        <option value="評審B">評審 B</option>
+                        <option value="評審C">評審 C</option>
+                        <option value="評審D">評審 D</option>
+                        <option value="評審E">評審 E</option>
+                    </select>
+                </div>
+                
+                <!-- 比賽圈別 -->
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-300">目前區域 (圈別)</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button onclick="selectCircle('A')" class="circle-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="A">A 圈</button>
+                        <button onclick="selectCircle('B')" class="circle-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="B">B 圈</button>
+                        <button onclick="selectCircle('C')" class="circle-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="C">C 圈</button>
+                        <button onclick="selectCircle('D')" class="circle-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="D">D 圈</button>
+                    </div>
+                </div>
+
+                <!-- 評分模式 -->
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-300">評分人數 (模式)</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectMode(1)" class="mode-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="1">單人 (1人)</button>
+                        <button onclick="selectMode(2)" class="mode-btn p-3 rounded-xl border border-slate-700 hover:bg-indigo-600 transition-all" data-value="2">對戰 (2人)</button>
+                    </div>
+                </div>
+
+                <button onclick="confirmSetup()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold text-lg mt-4 shadow-lg transition-all active:scale-95">
+                    進入評分界面
+                </button>
+            </div>
+        </div>
+
+        <!-- 第二階段：評分頁面 -->
+        <div id="judge-screen" class="hidden space-y-4 fade-in">
+            <div class="flex justify-between items-start px-2">
+                <div class="flex flex-col gap-1">
+                    <h2 id="display-event" class="text-indigo-400 font-bold text-sm"></h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span id="display-judge" class="bg-indigo-900 text-indigo-200 px-3 py-1 rounded-full text-[10px] font-bold"></span>
+                        <span id="display-circle" class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-[10px] font-bold"></span>
+                        <span id="display-mode" class="bg-emerald-900 text-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold"></span>
+                    </div>
+                </div>
+                <button onclick="resetSetup()" class="text-slate-400 text-xs hover:underline mt-1">重新設定</button>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl shadow-xl">
+                <!-- 評分輸入區域 -->
+                <div id="scoring-container" class="grid gap-4">
+                    <!-- 由 JS 動態生成 -->
+                </div>
+
+                <button onclick="submitBatch()" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-2xl font-black text-xl mt-6 shadow-xl transition-all active:scale-95 flex items-center justify-center">
+                    送出評分
+                </button>
+            </div>
+            
+            <p class="text-center text-slate-500 text-[10px] italic">Auto-increment enabled. Click +1 to skip numbers.</p>
+        </div>
+
+        <!-- 成功浮層 -->
+        <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-2xl opacity-0 transition-opacity pointer-events-none z-50">
+            評分成功送出！
+        </div>
+
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlq25ogi2qaLACG2vUUCv4wCPU3F1vkGSN2LrH9-Q3M-NbaykJ1G8Vek6kd33wL9g8/exec";
+        let config = { event: "", judge: "", circle: "", mode: 0 };
+        let currentNextId = 1;
+
+        function selectCircle(val) {
+            config.circle = val;
+            document.querySelectorAll('.circle-btn').forEach(btn => {
+                btn.classList.toggle('btn-active', btn.dataset.value === val);
+            });
+        }
+
+        function selectMode(val) {
+            config.mode = val;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('btn-active', parseInt(btn.dataset.value) === val);
+            });
+        }
+
+        function confirmSetup() {
+            const e = document.getElementById('setup-event').value;
+            const j = document.getElementById('setup-judge').value;
+            if(!e || !j || !config.circle || !config.mode) {
+                alert("請完整填寫活動名稱、評審、圈別與人數模式");
+                return;
+            }
+            config.event = e;
+            config.judge = j;
+            currentNextId = 1; // 每次重新設定都從 1 號開始
+            
+            renderScoringUI();
+            
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('judge-screen').classList.remove('hidden');
+            document.getElementById('display-event').innerText = "活動：" + config.event;
+            document.getElementById('display-judge').innerText = config.judge;
+            document.getElementById('display-circle').innerText = config.circle + " 圈";
+            document.getElementById('display-mode').innerText = config.mode + " 人模式";
+        }
+
+        function renderScoringUI() {
+            const container = document.getElementById('scoring-container');
+            container.innerHTML = "";
+            
+            if(config.mode === 1) {
+                container.className = "grid grid-cols-1 gap-4";
+                container.innerHTML = createInputHTML("CENTER", 1);
+            } else {
+                container.className = "grid grid-cols-2 gap-4";
+                container.innerHTML = createInputHTML("LEFT", 1) + createInputHTML("RIGHT", 2);
+            }
+            updateInputsFromGlobalId();
+        }
+
+        function createInputHTML(label, localIndex) {
+            const idField = `id${localIndex}`;
+            const scoreField = `score${localIndex}`;
+            return `
+                <div class="space-y-4 p-4 rounded-2xl bg-slate-800/50 border border-indigo-500/20 fade-in relative">
+                    <h2 class="text-center font-bold text-indigo-400 text-xs tracking-widest">${label}</h2>
+                    <div class="flex gap-2">
+                        <input type="number" id="${idField}" class="w-full bg-slate-900 p-3 rounded-lg border border-slate-700 text-center text-xl font-bold text-white" placeholder="編號">
+                        <button onclick="skipId(${localIndex})" class="bg-slate-700 hover:bg-slate-600 px-3 rounded-lg text-xs font-bold text-slate-300 transition-colors">+1</button>
+                    </div>
+                    <div class="text-center">
+                        <label class="text-[10px] text-slate-500 block mb-1">評分 (0-10)</label>
+                        <input type="number" id="${scoreField}" min="0" max="10" step="0.5" class="w-full bg-slate-900 p-4 rounded-lg border border-slate-700 text-center text-3xl font-black text-indigo-400" placeholder="0">
+                    </div>
+                </div>
+            `;
+        }
+
+        function skipId(index) {
+            const input = document.getElementById(`id${index}`);
+            input.value = parseInt(input.value || 0) + 1;
+            // 如果是 2 人模式且點了左邊，右邊也要跟著跳
+            if(config.mode === 2 && index === 1) {
+                const input2 = document.getElementById('id2');
+                input2.value = parseInt(input.value) + 1;
+            }
+        }
+
+        function updateInputsFromGlobalId() {
+            document.getElementById('id1').value = currentNextId;
+            if(config.mode === 2) {
+                document.getElementById('id2').value = currentNextId + 1;
+            }
+        }
+
+        async function submitBatch() {
+            const btn = document.getElementById('submit-btn');
+            const data = [];
+            
+            const id1 = document.getElementById('id1').value;
+            const sc1 = document.getElementById('score1').value;
+            if(id1) data.push({ id: id1, score: sc1 });
+            
+            if(config.mode === 2) {
+                const id2 = document.getElementById('id2').value;
+                const sc2 = document.getElementById('score2').value;
+                if(id2) data.push({ id: id2, score: sc2 });
+            }
+
+            if(data.length === 0) {
+                alert("請輸入選手編號");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "傳送中...";
+
+            try {
+                for(let item of data) {
+                    const payload = {
+                        event: config.event,
+                        judge: config.judge,
+                        circle: config.circle,
+                        candidate: item.id,
+                        score: parseFloat(item.score) || 0
+                    };
+
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                }
+                
+                showToast();
+                
+                // 自動更新編號：
+                // 1人模式 -> 下一號是 +1
+                // 2人模式 -> 下一號是 +2
+                currentNextId += config.mode;
+                
+                clearInputs();
+                updateInputsFromGlobalId();
+                document.getElementById('score1').focus(); // 聚焦在第一個評分欄位，方便輸入
+
+            } catch (e) {
+                alert("網路錯誤，請重試");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "送出評分";
+            }
+        }
+
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.classList.remove('opacity-0');
+            setTimeout(() => t.classList.add('opacity-0'), 1500);
+        }
+
+        function clearInputs() {
+            document.getElementById('score1').value = "";
+            if(config.mode === 2) document.getElementById('score2').value = "";
+        }
+
+        function resetSetup() {
+            if(!confirm("重新設定會將編號重置為 1，確定嗎？")) return;
+            document.getElementById('setup-screen').classList.remove('hidden');
+            document.getElementById('judge-screen').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

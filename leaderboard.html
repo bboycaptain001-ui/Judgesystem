@@ -1,0 +1,248 @@
+<<<<<<< HEAD
+import React, { useState, useEffect } from 'react';
+import { Trophy, Users, RefreshCw, Award } from 'lucide-react';
+
+const App = () => {
+  const [loading, setLoading] = useState(false);
+  const [rankings, setRankings] = useState([]);
+  const [config, setConfig] = useState({
+    // 修正了之前網址結尾遺漏的 'c' 字元，確保 API 連結完整
+    url: 'https://script.google.com/macros/s/AKfycbwFKNFYp8-VEik_GuKJncNEBgSAzniiQmzMrFAH_rIDywvWjfI8HOJ7k-bLWnmZsBbi/exec',
+    event: '',
+    circle: 'A'
+  });
+
+  const fetchRankings = async () => {
+    if (!config.url || !config.event) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.url}?event=${encodeURIComponent(config.event)}&circle=${config.circle}`);
+      const data = await response.json();
+      setRankings(data.slice(0, 16)); // 只取前 16 名
+    } catch (error) {
+      console.error("抓取失敗", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 每 30 秒自動重新整理一次
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (rankings.length > 0) fetchRankings();
+    }, 30000);
+    return () => clearInterval(timer);
+  }, [config, rankings]);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 font-sans">
+      <div className="max-w-4xl mx-auto">
+        {/* 控制面板 */}
+        <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-800 mb-8 flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">活動名稱</label>
+            <input 
+              type="text" 
+              placeholder="輸入活動名稱..."
+              className="w-full bg-slate-800 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 text-white outline-none"
+              value={config.event}
+              onChange={(e) => setConfig({...config, event: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">圈別</label>
+            <select 
+              className="bg-slate-800 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 text-white outline-none"
+              value={config.circle}
+              onChange={(e) => setConfig({...config, circle: e.target.value})}
+            >
+              <option value="A">A 圈</option>
+              <option value="B">B 圈</option>
+              <option value="C">C 圈</option>
+              <option value="D">D 圈</option>
+            </select>
+          </div>
+          <button 
+            onClick={fetchRankings}
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 p-3 rounded-xl transition-all flex items-center gap-2"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+            {loading ? '更新中' : '即時整理'}
+          </button>
+        </div>
+
+        {/* 排行榜標題 */}
+        <div className="flex items-center justify-between mb-6 px-2">
+          <div className="flex items-center gap-3">
+            <Trophy className="text-yellow-500" size={32} />
+            <h1 className="text-2xl font-black italic tracking-tighter uppercase">TOP 16 LEADERBOARD</h1>
+          </div>
+          <div className="text-slate-500 text-xs font-mono">
+            LIVE UPDATE: {new Date().toLocaleTimeString()}
+          </div>
+        </div>
+
+        {/* 排名列表 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {rankings.length > 0 ? (
+            rankings.map((player, index) => (
+              <div 
+                key={player.id} 
+                className={`flex items-center p-4 rounded-2xl border transition-all hover:scale-[1.02] ${
+                  index < 3 ? 'bg-indigo-900/20 border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'bg-slate-900/30 border-slate-800'
+                }`}
+              >
+                <div className={`w-10 h-10 flex items-center justify-center rounded-full font-black text-lg mr-4 ${
+                  index === 0 ? 'bg-yellow-500 text-slate-900' :
+                  index === 1 ? 'bg-slate-300 text-slate-900' :
+                  index === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-500 font-bold uppercase">Candidate ID</div>
+                  <div className="text-xl font-black"># {player.id}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 font-bold uppercase">Total Score</div>
+                  <div className="text-2xl font-black text-indigo-400">{player.totalScore.toFixed(1)}</div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-2 py-20 text-center text-slate-600 border-2 border-dashed border-slate-800 rounded-3xl">
+              請輸入正確的活動名稱並點擊更新
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+=======
+import React, { useState, useEffect } from 'react';
+import { Trophy, Users, RefreshCw, Award } from 'lucide-react';
+
+const App = () => {
+  const [loading, setLoading] = useState(false);
+  const [rankings, setRankings] = useState([]);
+  const [config, setConfig] = useState({
+    // 修正了之前網址結尾遺漏的 'c' 字元，確保 API 連結完整
+    url: 'https://script.google.com/macros/s/AKfycbwFKNFYp8-VEik_GuKJncNEBgSAzniiQmzMrFAH_rIDywvWjfI8HOJ7k-bLWnmZsBbi/exec',
+    event: '',
+    circle: 'A'
+  });
+
+  const fetchRankings = async () => {
+    if (!config.url || !config.event) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.url}?event=${encodeURIComponent(config.event)}&circle=${config.circle}`);
+      const data = await response.json();
+      setRankings(data.slice(0, 16)); // 只取前 16 名
+    } catch (error) {
+      console.error("抓取失敗", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 每 30 秒自動重新整理一次
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (rankings.length > 0) fetchRankings();
+    }, 30000);
+    return () => clearInterval(timer);
+  }, [config, rankings]);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 font-sans">
+      <div className="max-w-4xl mx-auto">
+        {/* 控制面板 */}
+        <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-800 mb-8 flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">活動名稱</label>
+            <input 
+              type="text" 
+              placeholder="輸入活動名稱..."
+              className="w-full bg-slate-800 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 text-white outline-none"
+              value={config.event}
+              onChange={(e) => setConfig({...config, event: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">圈別</label>
+            <select 
+              className="bg-slate-800 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 text-white outline-none"
+              value={config.circle}
+              onChange={(e) => setConfig({...config, circle: e.target.value})}
+            >
+              <option value="A">A 圈</option>
+              <option value="B">B 圈</option>
+              <option value="C">C 圈</option>
+              <option value="D">D 圈</option>
+            </select>
+          </div>
+          <button 
+            onClick={fetchRankings}
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 p-3 rounded-xl transition-all flex items-center gap-2"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+            {loading ? '更新中' : '即時整理'}
+          </button>
+        </div>
+
+        {/* 排行榜標題 */}
+        <div className="flex items-center justify-between mb-6 px-2">
+          <div className="flex items-center gap-3">
+            <Trophy className="text-yellow-500" size={32} />
+            <h1 className="text-2xl font-black italic tracking-tighter uppercase">TOP 16 LEADERBOARD</h1>
+          </div>
+          <div className="text-slate-500 text-xs font-mono">
+            LIVE UPDATE: {new Date().toLocaleTimeString()}
+          </div>
+        </div>
+
+        {/* 排名列表 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {rankings.length > 0 ? (
+            rankings.map((player, index) => (
+              <div 
+                key={player.id} 
+                className={`flex items-center p-4 rounded-2xl border transition-all hover:scale-[1.02] ${
+                  index < 3 ? 'bg-indigo-900/20 border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'bg-slate-900/30 border-slate-800'
+                }`}
+              >
+                <div className={`w-10 h-10 flex items-center justify-center rounded-full font-black text-lg mr-4 ${
+                  index === 0 ? 'bg-yellow-500 text-slate-900' :
+                  index === 1 ? 'bg-slate-300 text-slate-900' :
+                  index === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-500 font-bold uppercase">Candidate ID</div>
+                  <div className="text-xl font-black"># {player.id}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 font-bold uppercase">Total Score</div>
+                  <div className="text-2xl font-black text-indigo-400">{player.totalScore.toFixed(1)}</div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-2 py-20 text-center text-slate-600 border-2 border-dashed border-slate-800 rounded-3xl">
+              請輸入正確的活動名稱並點擊更新
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+>>>>>>> b7db9db9d9d926bfd8ba8c1db0f9c37135127ddc
+export default App;
