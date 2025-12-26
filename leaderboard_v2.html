@@ -21,11 +21,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // ==========================================
-        // ⚠️ 在這裡填寫您的 Google Apps Script 網址 ⚠️
-        // ==========================================
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlq25ogi2qaLACG2vUUCv4wCPU3F1vkGSN2LrH9-Q3M-NbaykJ1G8Vek6kd33wL9g8/exec';
-        // ==========================================
 
         const { useState, useEffect } = React;
 
@@ -48,14 +44,11 @@
                 setStatus('正在更新雲端數據...');
 
                 try {
-                    // 組合 API 請求網址
                     const apiUrl = `${GOOGLE_SCRIPT_URL}?event=${encodeURIComponent(config.event)}&circle=${encodeURIComponent(config.circle)}`;
-                    
                     const response = await fetch(apiUrl);
                     const data = await response.json();
                     
                     if (Array.isArray(data)) {
-                        // 依照總分排序
                         const sorted = [...data].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
                         setRankings(sorted);
                         setStatus(`最後更新：${new Date().toLocaleTimeString()}`);
@@ -101,6 +94,7 @@
                                         <option value="A">A 圈</option>
                                         <option value="B">B 圈</option>
                                         <option value="C">C 圈</option>
+                                        <option value="D">D 圈</option>
                                     </select>
                                 </div>
                                 <button 
@@ -142,7 +136,7 @@
                         ) : (
                             <div className="col-span-full py-24 text-center border-2 border-dashed border-slate-800 rounded-[3rem]">
                                 <p className="text-slate-600 font-bold uppercase tracking-[0.3em]">無數據顯示</p>
-                                <p className="text-slate-700 text-xs mt-3 italic">請輸入正確的「活動 ID」並按下 REFRESH</p>
+                                <p className="text-slate-700 text-xs mt-3 italic">請選擇圈別並按下 REFRESH</p>
                             </div>
                         )}
                     </div>
