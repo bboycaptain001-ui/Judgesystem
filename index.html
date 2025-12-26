@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>街舞大賽評分系統 - 繁體中文版</title>
+    <title>街舞大賽評分系統 - 整合查詢版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Oswald:wght@500;700&display=swap');
@@ -80,24 +80,35 @@
             margin: 0; 
         }
         
-        /* 縮小英文字專用樣式 */
         .sub-eng {
             font-size: 0.65rem;
             letter-spacing: 0.15em;
             opacity: 0.7;
             font-weight: 700;
         }
+
+        /* 查詢浮窗樣式 */
+        #query-modal {
+            transition: all 0.3s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+        #query-modal.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .history-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
     </style>
 </head>
 <body class="p-2 md:p-4 min-h-screen flex items-start md:items-center justify-center">
-    <div id="app" class="w-full max-w-2xl">
+    <div id="app" class="w-full max-w-2xl relative">
         
-        <!-- 設定頁面 (英文字縮小優化) -->
+        <!-- 設定頁面 -->
         <div id="setup-screen" class="glass-card p-8 md:p-10 rounded-[2.5rem] fade-in">
             <img src="https://raw.githubusercontent.com/bboycaptain001-ui/my-assets/84eabb3540c8f72fa5d5101e29ebbc0a5ef923a9/%E7%AF%89%E5%A4%A2%E8%80%85(%E7%99%BD)%E7%84%A1%E8%83%8C%E6%99%AF.png" alt="築夢者標誌" class="logo-img">
-            
             <h1 class="text-3xl font-black text-center mb-10 text-white tracking-tight">系統初始化 <span class="text-indigo-500 italic text-xl">INIT</span></h1>
-            
             <div class="space-y-8">
                 <div>
                     <label class="block mb-3 text-indigo-400">
@@ -154,7 +165,7 @@
             </div>
         </div>
 
-        <!-- 評分頁面 (寬鬆布局) -->
+        <!-- 評分頁面 -->
         <div id="judge-screen" class="hidden space-y-4 fade-in py-6">
             <div class="flex justify-between items-end px-4">
                 <div class="flex items-center gap-4">
@@ -168,7 +179,14 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="resetSetup()" class="text-slate-500 text-[10px] font-black hover:text-red-400 transition-colors uppercase border-b border-transparent hover:border-red-400 pb-1">重新設定 RESET</button>
+                <div class="flex flex-col items-end gap-2">
+                    <!-- 新增：歷史紀錄查詢按鈕 -->
+                    <button onclick="toggleQueryModal(true)" class="bg-slate-800 hover:bg-slate-700 text-indigo-400 p-2 rounded-xl border border-slate-700 transition-all flex items-center gap-2 px-3 shadow-lg group">
+                        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                        <span class="text-[10px] font-black uppercase">評分歷史</span>
+                    </button>
+                    <button onclick="resetSetup()" class="text-slate-500 text-[10px] font-black hover:text-red-400 transition-colors uppercase border-b border-transparent hover:border-red-400 pb-1">重新設定 RESET</button>
+                </div>
             </div>
 
             <div class="glass-card p-1 rounded-[3rem] shadow-2xl">
@@ -177,6 +195,40 @@
                     <button onclick="submitBatch()" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-[2.5rem] font-black text-1xl shadow-2xl shadow-indigo-500/30 transition-all active:scale-95 flex flex-col items-center justify-center text-white">
                         <span>送出評分</span>
                         <span class="sub-eng">SUBMIT SCORE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 查詢歷史浮窗 (Modal) -->
+        <div id="query-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+            <div class="glass-card w-full max-w-lg rounded-[2.5rem] overflow-hidden flex flex-col max-h-[80vh]">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center bg-indigo-600/10">
+                    <div>
+                        <h3 class="text-xl font-black text-white">評分紀錄查詢</h3>
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-0.5">Scoring History Lookup</p>
+                    </div>
+                    <button onclick="toggleQueryModal(false)" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="p-4 bg-slate-900/50 flex flex-wrap gap-2 text-[10px] font-bold">
+                    <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-400">當前條件：</span>
+                    <span id="query-info-event" class="text-indigo-400"></span>
+                    <span id="query-info-judge" class="text-indigo-400"></span>
+                    <span id="query-info-circle" class="text-indigo-400"></span>
+                </div>
+
+                <div id="history-content" class="flex-1 overflow-y-auto p-4 space-y-2">
+                    <!-- 載入中或內容會顯示在這裡 -->
+                    <div class="text-center py-20 text-slate-500 italic">正在從伺服器獲取數據...</div>
+                </div>
+
+                <div class="p-4 border-t border-white/5 bg-slate-900/30">
+                    <button onclick="fetchHistory()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        刷新數據 REFRESH
                     </button>
                 </div>
             </div>
@@ -247,7 +299,6 @@
                     <div>
                         <span class="sub-eng text-slate-400">${label}</span>
                     </div>
-
                     <div class="flex flex-col items-center gap-2">
                         <div class="flex items-center gap-4 w-full max-w-sm mx-auto">
                             <div class="id-container flex-1 flex items-center px-6 py-4 rounded-2xl shadow-inner">
@@ -259,13 +310,11 @@
                             </button>
                         </div>
                     </div>
-
                     <div class="flex flex-col items-center pt-2 px-2 md:px-6">
                         <div class="flex items-baseline gap-2 mb-2">
                             <input type="number" id="score${localIndex}" class="bg-transparent p-0 text-center text-8xl font-black text-white outline-none pointer-events-none font-oswald" placeholder="0" readonly>
                             <span class="text-indigo-400 font-black text-xl">PTS</span>
                         </div>
-                        
                         <div class="w-full">
                             ${btns}
                             <div class="flex gap-4 mt-6 w-full">
@@ -319,16 +368,24 @@
             `;
 
             try {
+                // 照樣發送 POST
                 const promises = data.map(item => 
                     fetch(GOOGLE_SCRIPT_URL, {
                         method: "POST", mode: "no-cors",
-                        body: JSON.stringify({ event: config.event, judge: config.judge, circle: config.circle, candidate: item.id, score: parseFloat(item.score) })
+                        body: JSON.stringify({ 
+                            event: config.event, 
+                            judge: config.judge, 
+                            circle: config.circle, 
+                            candidate: item.id, 
+                            score: parseFloat(item.score) 
+                        })
                     })
                 );
                 
                 await Promise.all(promises);
                 showToast(); 
                 
+                // 自動增加 ID
                 if (config.mode === 1) {
                     document.getElementById('id1').value = parseInt(id1) + 1;
                 } else {
@@ -345,6 +402,76 @@
                 btn.innerHTML = `<span>送出評分</span><span class="sub-eng">SUBMIT SCORE</span>`;
             }
         }
+
+        // --- 查詢相關功能 ---
+
+        function toggleQueryModal(show) {
+            const modal = document.getElementById('query-modal');
+            if(show) {
+                modal.classList.add('active');
+                // 同步當前資訊到浮窗介面
+                document.getElementById('query-info-event').innerText = `🏆 ${config.event}`;
+                document.getElementById('query-info-judge').innerText = `👤 ${config.judge}`;
+                document.getElementById('query-info-circle').innerText = `⭕ ${config.circle}圈`;
+                fetchHistory();
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+
+        async function fetchHistory() {
+            const content = document.getElementById('history-content');
+            content.innerHTML = '<div class="flex flex-col items-center py-20"><svg class="animate-spin h-8 w-8 text-indigo-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-slate-500 animate-pulse">正在同步伺服器資料...</span></div>';
+
+            try {
+                // 使用 GET 查詢，參數與後端對齊
+                const params = new URLSearchParams({
+                    event: config.event,
+                    judge: config.judge,
+                    circle: config.circle
+                });
+
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+                const data = await response.json();
+                
+                // 假設後端回傳的是 [ {candidate: "1", score: 8}, ... ] 或是 {records: [...]}
+                const list = Array.isArray(data) ? data : (data.records || []);
+
+                if(list.length === 0) {
+                    content.innerHTML = '<div class="text-center py-20 text-slate-500">此場次尚無評分紀錄</div>';
+                    return;
+                }
+
+                // 排序：按號碼排序（方便核對）
+                list.sort((a, b) => parseInt(a.candidate || 0) - parseInt(b.candidate || 0));
+
+                content.innerHTML = list.map(item => `
+                    <div class="history-item flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 transition-all">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-indigo-600/20 text-indigo-400 w-10 h-10 rounded-lg flex items-center justify-center font-black font-oswald text-xl border border-indigo-500/20">
+                                ${item.candidate || item.id || '#'}
+                            </span>
+                            <span class="text-slate-400 text-xs font-bold uppercase tracking-tighter">選手號碼</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-black text-white font-oswald">${item.score}</span>
+                            <span class="text-indigo-500 text-[10px] font-black ml-1 uppercase">Pts</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                content.innerHTML = `
+                    <div class="text-center py-10 px-6">
+                        <p class="text-red-400 font-bold mb-2">無法讀取資料</p>
+                        <p class="text-slate-500 text-xs">可能原因：Apps Script 未開放所有人存取、或 CORS 被瀏覽器攔截。</p>
+                        <button onclick="window.open('${GOOGLE_SCRIPT_URL}?event=${encodeURIComponent(config.event)}')" class="mt-4 text-indigo-400 underline text-xs italic">點此手動測試連接</button>
+                    </div>
+                `;
+            }
+        }
+
+        // --- 基礎工具功能 ---
 
         function showToast() {
             const t = document.getElementById('toast');
