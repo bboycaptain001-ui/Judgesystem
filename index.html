@@ -43,7 +43,7 @@
 
         .score-btn {
             background: #1e293b;
-            border: 1px solid #334155;
+            border: 1px solid #475569;
             transition: all 0.1s ease;
             user-select: none;
             color: #cbd5e1;
@@ -53,6 +53,7 @@
             background: #4f46e5; 
             border-color: #818cf8; 
             color: white;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.6);
         }
 
         .id-container {
@@ -78,29 +79,40 @@
             -webkit-appearance: none; 
             margin: 0; 
         }
+        
+        /* 縮小英文字專用樣式 */
+        .sub-eng {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            opacity: 0.7;
+            font-weight: 700;
+        }
     </style>
 </head>
-<body class="p-4 min-h-screen flex items-center justify-center">
-    <div id="app" class="w-full max-w-xl">
+<body class="p-2 md:p-4 min-h-screen flex items-start md:items-center justify-center">
+    <div id="app" class="w-full max-w-2xl">
         
-        <!-- 設定頁面 -->
+        <!-- 設定頁面 (英文字縮小優化) -->
         <div id="setup-screen" class="glass-card p-8 md:p-10 rounded-[2.5rem] fade-in">
             <img src="https://raw.githubusercontent.com/bboycaptain001-ui/my-assets/84eabb3540c8f72fa5d5101e29ebbc0a5ef923a9/%E7%AF%89%E5%A4%A2%E8%80%85(%E7%99%BD)%E7%84%A1%E8%83%8C%E6%99%AF.png" alt="築夢者標誌" class="logo-img">
             
-            <h1 class="text-3xl font-black text-center mb-10 text-white tracking-tight">系統初始化 <span class="text-indigo-500 italic">INIT</span></h1>
+            <h1 class="text-3xl font-black text-center mb-10 text-white tracking-tight">系統初始化 <span class="text-indigo-500 italic text-xl">INIT</span></h1>
             
             <div class="space-y-8">
-                <!-- 1. 活動名稱 -->
                 <div>
-                    <label class="block text-xs font-black mb-3 text-indigo-400 uppercase tracking-widest">活動名稱 EVENT NAME</label>
-                    <input type="text" id="setup-event" class="w-full p-5 bg-slate-900/50 border border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-white font-bold text-lg" placeholder="請輸入比賽或活動名稱">
+                    <label class="block mb-3 text-indigo-400">
+                        <span class="text-base font-black">活動名稱</span>
+                        <span class="sub-eng ml-2">EVENT NAME</span>
+                    </label>
+                    <input type="text" id="setup-event" class="w-full p-5 bg-slate-900/50 border border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-white font-bold text-lg" placeholder="請輸入比賽名稱">
                 </div>
-
-                <!-- 2. 評審身分 -->
                 <div>
-                    <label class="block text-xs font-black mb-3 text-indigo-400 uppercase tracking-widest">評審身分 JUDGE ROLE</label>
+                    <label class="block mb-3 text-indigo-400">
+                        <span class="text-base font-black">評審身分</span>
+                        <span class="sub-eng ml-2">JUDGE ROLE</span>
+                    </label>
                     <select id="setup-judge" class="w-full p-5 bg-slate-900/50 border border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-white font-bold text-lg appearance-none">
-                        <option value="">請選擇您的評審編號...</option>
+                        <option value="">請選擇您的評審席位...</option>
                         <option value="評審A">評審 A (JUDGE A)</option>
                         <option value="評審B">評審 B (JUDGE B)</option>
                         <option value="評審C">評審 C (JUDGE C)</option>
@@ -108,10 +120,11 @@
                         <option value="評審E">評審 E (JUDGE E)</option>
                     </select>
                 </div>
-
-                <!-- 3. 圈別選擇 -->
                 <div>
-                    <label class="block text-xs font-black mb-3 text-indigo-400 uppercase tracking-widest">圈別選擇 CIRCLE</label>
+                    <label class="block mb-3 text-indigo-400">
+                        <span class="text-base font-black">圈別選擇</span>
+                        <span class="sub-eng ml-2">CIRCLE</span>
+                    </label>
                     <div class="grid grid-cols-4 gap-3">
                         <button onclick="selectCircle('A')" class="circle-btn config-btn py-4 rounded-2xl text-xl font-black" data-value="A">A 圈</button>
                         <button onclick="selectCircle('B')" class="circle-btn config-btn py-4 rounded-2xl text-xl font-black" data-value="B">B 圈</button>
@@ -119,51 +132,53 @@
                         <button onclick="selectCircle('D')" class="circle-btn config-btn py-4 rounded-2xl text-xl font-black" data-value="D">D 圈</button>
                     </div>
                 </div>
-
-                <!-- 4. 模式選擇 -->
                 <div>
-                    <label class="block text-xs font-black mb-3 text-indigo-400 uppercase tracking-widest">競賽模式 MODE</label>
+                    <label class="block mb-3 text-indigo-400">
+                        <span class="text-base font-black">競賽模式</span>
+                        <span class="sub-eng ml-2">MODE</span>
+                    </label>
                     <div class="grid grid-cols-2 gap-4">
-                        <button onclick="selectMode(1)" class="mode-btn config-btn p-5 rounded-2xl font-black flex flex-col items-center justify-center gap-1" data-value="1">
+                        <button onclick="selectMode(1)" class="mode-btn config-btn p-5 rounded-2xl font-black flex flex-col items-center justify-center" data-value="1">
                             <span class="text-xl">單人海選</span>
-                            <span class="text-[10px] opacity-60 tracking-[0.2em]">AUDITION</span>
+                            <span class="sub-eng mt-1">AUDITION</span>
                         </button>
-                        <button onclick="selectMode(2)" class="mode-btn config-btn p-5 rounded-2xl font-black flex flex-col items-center justify-center gap-1" data-value="2">
+                        <button onclick="selectMode(2)" class="mode-btn config-btn p-5 rounded-2xl font-black flex flex-col items-center justify-center" data-value="2">
                             <span class="text-xl">對戰模式</span>
-                            <span class="text-[10px] opacity-60 tracking-[0.2em]">BATTLE</span>
+                            <span class="sub-eng mt-1">BATTLE</span>
                         </button>
                     </div>
                 </div>
-
-                <button onclick="confirmSetup()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-2xl font-black text-xl mt-4 shadow-xl transition-all active:scale-95 text-white uppercase tracking-widest">
-                    進入評分系統 START
+                <button onclick="confirmSetup()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-2xl font-black text-xl mt-4 shadow-xl transition-all active:scale-95 text-white tracking-widest">
+                    進入評分系統 <span class="text-xs opacity-70 ml-1">START</span>
                 </button>
             </div>
         </div>
 
-        <!-- 評分頁面 -->
-        <div id="judge-screen" class="hidden space-y-4 fade-in">
-            <div class="flex justify-between items-end px-2">
+        <!-- 評分頁面 (寬鬆布局) -->
+        <div id="judge-screen" class="hidden space-y-4 fade-in py-6">
+            <div class="flex justify-between items-end px-4">
                 <div class="flex items-center gap-4">
                     <img src="https://raw.githubusercontent.com/bboycaptain001-ui/my-assets/84eabb3540c8f72fa5d5101e29ebbc0a5ef923a9/%E7%AF%89%E5%A4%A2%E8%80%85(%E7%99%BD)%E7%84%A1%E8%83%8C%E6%99%AF.png" alt="Logo" class="w-20 h-auto">
                     <div class="flex flex-col">
                         <h2 id="display-event" class="text-indigo-400 font-black text-sm uppercase tracking-wider truncate max-w-[200px]"></h2>
                         <div class="flex gap-2 mt-1">
-                            <span id="display-judge" class="bg-indigo-500 text-white px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-tighter"></span>
+                            <span id="display-judge" class="bg-indigo-500 text-white px-2 py-0.5 rounded-md text-[10px] font-black"></span>
                             <span id="display-circle" class="bg-slate-700 text-slate-200 px-2 py-0.5 rounded-md text-[10px] font-black"></span>
-                            <span id="display-mode" class="bg-amber-600 text-white px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-tighter"></span>
+                            <span id="display-mode" class="bg-amber-600 text-white px-2 py-0.5 rounded-md text-[10px] font-black"></span>
                         </div>
                     </div>
                 </div>
                 <button onclick="resetSetup()" class="text-slate-500 text-[10px] font-black hover:text-red-400 transition-colors uppercase border-b border-transparent hover:border-red-400 pb-1">重新設定 RESET</button>
             </div>
 
-            <div class="glass-card p-6 rounded-[2.5rem] shadow-2xl">
+            <div class="glass-card p-1 rounded-[3rem] shadow-2xl">
                 <div id="scoring-container" class="grid gap-8"></div>
-                <button onclick="submitBatch()" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 py-6 rounded-3xl font-black text-2xl mt-10 shadow-2xl shadow-indigo-500/20 transition-all active:scale-95 flex flex-col items-center justify-center text-white uppercase tracking-[0.1em]">
-                    <span>送出評分</span>
-                    <span class="text-xs opacity-60">SUBMIT SCORE</span>
-                </button>
+                <div class="px-8 pb-10">
+                    <button onclick="submitBatch()" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 py-7 rounded-[2.5rem] font-black text-3xl shadow-2xl shadow-indigo-500/30 transition-all active:scale-95 flex flex-col items-center justify-center text-white">
+                        <span>送出評分</span>
+                        <span class="sub-eng">SUBMIT SCORE</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -211,51 +226,53 @@
             container.innerHTML = "";
             if(config.mode === 1) {
                 container.className = "grid grid-cols-1 gap-6";
-                container.innerHTML = createInputHTML("選手評分 AUDITION", 1, "bg-indigo-500/10");
+                container.innerHTML = createInputHTML("選手評分 AUDITION", 1, "bg-indigo-500/5");
             } else {
-                container.className = "grid grid-cols-2 gap-4";
+                container.className = "grid grid-cols-1 gap-4";
                 container.innerHTML = 
-                    createInputHTML("左側 (紅方)", 1, "bg-red-500/5 border-red-500/20") + 
-                    createInputHTML("右側 (藍方)", 2, "bg-blue-500/5 border-blue-500/20");
+                    createInputHTML("左側 (紅方) RED", 1, "bg-red-500/5 border-red-500/10") + 
+                    createInputHTML("右側 (藍方) BLUE", 2, "bg-blue-500/5 border-blue-500/10");
             }
         }
 
         function createInputHTML(label, localIndex, bgColor) {
-            let btns = '<div class="grid grid-cols-5 gap-2 mt-4">';
+            let btns = '<div class="grid grid-cols-5 gap-4 mt-6">';
             for(let i = 1; i <= 10; i++) {
-                btns += `<button onclick="setScore(${localIndex}, ${i})" class="score-btn-${localIndex} score-btn h-12 rounded-2xl text-lg font-black" data-val="${i}">${i}</button>`;
+                btns += `<button onclick="setScore(${localIndex}, ${i})" class="score-btn-${localIndex} score-btn h-20 rounded-[1.5rem] text-3xl font-black font-oswald" data-val="${i}">${i}</button>`;
             }
             btns += '</div>';
 
             return `
-                <div class="space-y-6 p-6 rounded-[2rem] ${bgColor} border fade-in relative overflow-hidden text-center">
+                <div class="space-y-6 p-8 md:px-10 rounded-[2.5rem] ${bgColor} border-b border-white/5 fade-in relative overflow-hidden text-center">
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">${label}</span>
+                        <span class="sub-eng text-slate-400">${label}</span>
                     </div>
 
                     <div class="flex flex-col items-center gap-2">
-                        <span class="text-[10px] font-bold text-indigo-400/80 uppercase">選手號碼 NO.</span>
-                        <div class="flex items-center gap-2 w-full">
-                            <div class="id-container flex-1 flex items-center px-4 py-3 rounded-2xl shadow-inner">
-                                <span class="text-indigo-500 font-black mr-2 text-xl">#</span>
-                                <input type="number" id="id${localIndex}" class="w-full bg-transparent text-center text-3xl font-black text-white outline-none font-oswald" placeholder="00">
+                        <div class="flex items-center gap-4 w-full max-w-sm mx-auto">
+                            <div class="id-container flex-1 flex items-center px-6 py-4 rounded-2xl shadow-inner">
+                                <span class="text-indigo-500 font-black mr-2 text-2xl">#</span>
+                                <input type="number" id="id${localIndex}" class="w-full bg-transparent text-center text-4xl font-black text-white outline-none font-oswald" placeholder="00">
                             </div>
-                            <button onclick="incrementId(${localIndex})" class="bg-slate-800 hover:bg-slate-700 w-14 h-14 rounded-2xl flex items-center justify-center border border-white/5 transition-colors shadow-lg active:scale-90">
-                                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                            <button onclick="incrementId(${localIndex})" class="bg-indigo-600/20 hover:bg-indigo-600/40 w-16 h-16 rounded-2xl flex items-center justify-center border border-indigo-500/30 transition-colors shadow-lg active:scale-90">
+                                <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 4v16m8-8H4"></path></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col items-center pt-2">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">評分 SCORE</span>
-                        <input type="number" id="score${localIndex}" class="w-full bg-transparent p-0 text-center text-7xl font-black text-white outline-none pointer-events-none font-oswald" placeholder="0" readonly>
+                    <div class="flex flex-col items-center pt-2 px-2 md:px-6">
+                        <div class="flex items-baseline gap-2 mb-2">
+                            <input type="number" id="score${localIndex}" class="bg-transparent p-0 text-center text-8xl font-black text-white outline-none pointer-events-none font-oswald" placeholder="0" readonly>
+                            <span class="text-indigo-400 font-black text-xl">PTS</span>
+                        </div>
                         
-                        ${btns}
-                        
-                        <div class="flex gap-2 mt-3 w-full">
-                            <button onclick="setScore(${localIndex}, 0.5)" class="score-btn-${localIndex} score-btn flex-[2] h-12 rounded-2xl text-sm font-black" data-val="0.5">0.5</button>
-                            <button onclick="adjustScore(${localIndex}, 0.5)" class="bg-slate-700 hover:bg-slate-600 h-12 rounded-2xl text-xl font-black text-white flex-1 transition-colors active:scale-95">+</button>
-                            <button onclick="adjustScore(${localIndex}, -0.5)" class="bg-slate-700 hover:bg-slate-600 h-12 rounded-2xl text-xl font-black text-white flex-1 transition-colors active:scale-95">-</button>
+                        <div class="w-full">
+                            ${btns}
+                            <div class="flex gap-4 mt-6 w-full">
+                                <button onclick="setScore(${localIndex}, 0.5)" class="score-btn-${localIndex} score-btn flex-[1.5] h-20 rounded-[1.5rem] text-2xl font-black font-oswald" data-val="0.5">0.5</button>
+                                <button onclick="adjustScore(${localIndex}, 0.5)" class="bg-slate-700 hover:bg-slate-600 h-20 rounded-[1.5rem] text-4xl font-black text-white flex-1 transition-colors active:scale-95 shadow-lg">+</button>
+                                <button onclick="adjustScore(${localIndex}, -0.5)" class="bg-slate-700 hover:bg-slate-600 h-20 rounded-[1.5rem] text-4xl font-black text-white flex-1 transition-colors active:scale-95 shadow-lg">-</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -268,7 +285,8 @@
         }
 
         function adjustScore(index, delta) {
-            let val = Math.max(0, Math.min(10, parseFloat(document.getElementById(`score${index}`).value || 0) + delta));
+            let current = parseFloat(document.getElementById(`score${index}`).value || 0);
+            let val = Math.max(0, Math.min(10, current + delta));
             setScore(index, val);
         }
 
@@ -296,8 +314,8 @@
 
             btn.disabled = true;
             btn.innerHTML = `
-                <svg class="animate-spin h-6 w-6 text-white mb-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span class="text-sm">傳送中 SENDING...</span>
+                <svg class="animate-spin h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span class="sub-eng">SENDING...</span>
             `;
 
             try {
@@ -324,7 +342,7 @@
                 alert("傳送失敗，請檢查網路連線"); 
             } finally { 
                 btn.disabled = false; 
-                btn.innerHTML = `<span>送出評分</span><span class="text-xs opacity-60">SUBMIT SCORE</span>`;
+                btn.innerHTML = `<span>送出評分</span><span class="sub-eng">SUBMIT SCORE</span>`;
             }
         }
 
